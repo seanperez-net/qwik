@@ -1,6 +1,6 @@
 {
   "name": "qwik-monorepo",
-  "version": "0.0.0-read-qwik-package-json",
+  "version": "0.0.0-read-qwik-package-json.0",
   "comments": {
     "01": "devDependencies includes reference to @builder.io/qwik: workspace: *. This is needed or e2e tests will fail",
     "02": "  It would be nice to be able to remove this dependency and fix the test.",
@@ -94,7 +94,8 @@
     }
   ],
   "dependencies": {
-    "esbuild-plugin-raw": "^0.1.8"
+    "esbuild-plugin-raw": "^0.1.8",
+    "tmp": "^0.2.3"
   },
   "devDependencies": {
     "@builder.io/partytown": "0.10.2",
@@ -123,6 +124,7 @@
     "@types/prompts": "2.4.9",
     "@types/react": "18.3.3",
     "@types/semver": "7.5.8",
+    "@types/tmp": "^0.2.6",
     "@types/which-pm-runs": "1.0.2",
     "@typescript-eslint/eslint-plugin": "7.16.1",
     "@typescript-eslint/parser": "7.16.1",
