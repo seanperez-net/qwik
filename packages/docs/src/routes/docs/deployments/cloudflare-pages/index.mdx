@@ -11,6 +11,7 @@ contributors:
   - mrhoodz
   - dario-piotrowicz
   - matthewlal
+  - seanperez-net
 updated_at: '2023-10-03T18:53:23Z'
 created_at: '2023-04-06T21:28:28Z'
 ---
@@ -140,6 +141,103 @@ Please refer to the [Cloudflare Pages docs](https://developers.cloudflare.com/pa
 
 Note that you will need a [Cloudflare account](https://dash.cloudflare.com/sign-up?lang=en-US) in order to complete this step.
 
+## Configuring Wrangler for Cloudflare Pages
+
+Upon completion of the following section, the updated file structure should be as such:
+
+```shell
+└── adapters/
+    └── cloudflare-pages/
+        └── vite.config.ts
+└── src/
+    └── entry.cloudflare-pages.tsx
+└── worker-configuration.d.ts
+└── wrangler.toml
+```
+
+### Cloudflare Pages Wrangler
+
+When the cloudflare-pages adapter is added, wrangler is added to the package.json file and installed. To configure wrangler and add your project's Cloudflare environment and wrangler.toml file to your project's src/, an active Cloudflare account and project will be required.
+
+Please refer to the Cloudflare Pages docs for more information on how to configure your project via wrangler.toml.
+
+Below is an example of using the Wrangler CLI to configure/update your project with Wrangler.
+
+Login using Wrangler CLI. In VSCode, this will open your browser to Cloudflare's website and ask you to accept the CLI to log in to your account if you are already logged in. If not, proceed through the website's login process.
+<PackageManagerTabs>
+<span q:slot="pnpm">
+```shell
+pnpm wrangler login
+```
+</span>
+<span q:slot="npm">
+```shell
+npx wrangler login
+```
+</span>
+<span q:slot="yarn">
+```shell
+yarn wrangler login
+```
+</span>
+<span q:slot="bun">
+```shell
+bunx wrangler login
+```
+</span>
+</PackageManagerTabs>
+
+Using the Wrangler CLI to download the config for your project. You must have an existing project for this to work. If not, refer to the Cloudflare documentation provided above to create a new project.
+To do this in Cloudflare, go to **Workers & Pages > Create **
+<PackageManagerTabs>
+<span q:slot="pnpm">
+```shell
+pnpm wrangler pages download config <PROJECT_NAME>
+```
+</span>
+<span q:slot="npm">
+```shell
+npx wrangler pages download config <PROJECT_NAME>
+```
+</span>
+<span q:slot="yarn">
+```shell
+yarn wrangler pages download config <PROJECT_NAME>
+```
+</span>
+<span q:slot="bun">
+```shell
+bunx wrangler pages download config <PROJECT_NAME>
+```
+</span>
+</PackageManagerTabs>
+
+You should now see a new file called wrangler.toml in your project's root directory. Now you can proceed to import your Cloudflare types/bindings using the Wrangler CLI.
+<PackageManagerTabs>
+<span q:slot="pnpm">
+```shell
+pnpm wrangler types
+```
+</span>
+<span q:slot="npm">
+```shell
+npx wrangler types
+```
+</span>
+<span q:slot="yarn">
+```shell
+yarn wrangler types
+```
+</span>
+<span q:slot="bun">
+```shell
+bunx wrangler types
+```
+</span>
+</PackageManagerTabs>
+
+You should now see another new file in your project's root directory called worker-configuration.d.ts. This file should contain an interface Env {<YOUR TYPES | BINDINGS> } which should be globally available throughout your project. If you currently have another globally available Env type/interface, this may need to be adjusted accordingly. You can proceed to the Advanced step below to include this in the src/entry.cloudflare-pages.tsx file.
+
 ## Advanced
 
 ### Cloudflare Pages Entry Middleware
@@ -158,6 +256,17 @@ import render from './entry.ssr';
 const fetch = createQwikCity({ render, qwikCityPlan, manifest });
 
 export { fetch };
+```
+
+> If you are following the previous section [Configuring Wrangler for Cloudflare Pages](#configuring-wrangler-for-cloudflare-pages),
+> you may want to add your `interface Env{}` here.
+
+```tsx title="src/entry.cloudflare-pages.tsx"
+declare global {
+  interface QwikCityPlatform extends PlatformCloudflarePages {
+    env: Env; // add the following here , there should be no import necessary 
+  }
+}
 ```
 
 The compiled middleware will be built in the `server/` directory. Such directory also contains a `_worker.js` file which implements the application's request handling as per the [Cloudflare Pages Advanced Mode](https://developers.cloudflare.com/pages/platform/functions/advanced-mode/#advanced-mode).
